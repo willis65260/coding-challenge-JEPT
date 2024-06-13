@@ -55,23 +55,60 @@ if(!is_null($user_id)){
         case "POST":
             $data = json_decode(file_get_contents("php://input"),true);
             // $datos=var_dump($data);
-            echo($data["action"]);
-            echo($data["valores"][2]);
-            echo($data["valores"][2]);
+            // echo($data["action"]);
+            // echo($data["valores"][2]);
+            // echo($data["valores"][2]);
             // echo($data["borrar"][0]);
             switch($data["action"]){
                 case "crear":
-                    echo("entro a crear");
                     $identi_pay = $data["valores"][0];
                     $identi_usr = $data["valores"][1];
                     $concept= $data["valores"][2];
                     $quantity = $data["valores"][3];
-                    $sql = "INSERT INTO payments (id_user,concept,quantity) VALUES($user_id,$concept,$quantity);";
+                    $sql = "INSERT INTO payments (id_user,concept,quantity) VALUES($user_id,'$concept','$quantity');";
                     if ($result = $conn->query($sql) === TRUE) {
                         echo "New record created successfully";
                       } else {
                         echo "Error: " . $sql . "<br>" . $conn->error;
                       }
+                    break;
+                case "update":
+                    $identi_pay = $data["valores"][0];
+                    $identi_usr = $data["valores"][1];
+                    $concept= $data["valores"][2];
+                    $quantity = $data["valores"][3];
+                    $sql = "UPDATE payments SET concept='$concept',quantity='$quantity' WHERE id_payments=$identi_pay AND id_user=$user_id";
+                    if ($result = $conn->query($sql) === TRUE) {
+                        echo "New record created successfully";
+                      } else {
+                        echo "Error: " . $sql . "<br>" . $conn->error;
+                      }
+                    break;
+                case "delete_one":
+                    $identi_pay = $data["valores"][0];
+                    $identi_usr = $data["valores"][1];
+                    // $concept= $data["valores"][2];
+                    // $quantity = $data["valores"][3];
+                    $sql = "DELETE FROM payments WHERE id_payments=$identi_pay AND id_user=$user_id";
+                    if ($result = $conn->query($sql) === TRUE) {
+                        echo "New record created successfully";
+                      } else {
+                        echo "Error: " . $sql . "<br>" . $conn->error;
+                      }
+                    break;
+                case "delete_bulk":
+                    $identi_usr = $data["user_id"];
+                    $identi_pay_arr = $data["borrar"];
+                    // $concept= $data["valores"][2];
+                    // $quantity = $data["valores"][3];
+                    foreach ($identi_pay_arr as $identi_pay){
+                        $sql = "DELETE FROM payments WHERE id_payments=$identi_pay AND id_user=$user_id";
+                        if ($result = $conn->query($sql) === TRUE) {
+                                echo "New record created successfully";
+                            } else {
+                                echo "Error: " . $sql . "<br>" . $conn->error;
+                            }
+                    }
                     break;
             }
     }
